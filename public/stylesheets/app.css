@@ -1,0 +1,22 @@
+i.icon {
+    font-size: 1em;
+}
+
+.container.main {
+    margin-top: 7em;
+}
+
+#desc {
+    margin-top: 15px;
+}
+#delete {
+    display: inline;
+}
+
+#edit {
+    margin-top: 10px;
+}
+
+body {
+    background-color: lightgray;
+}
