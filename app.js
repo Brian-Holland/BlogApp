@@ -7,7 +7,7 @@ const express = require("express"),
     Blog = require("./models/blog");
 
 // APP CONFIG
-mongoose.connect("mongodb://localhost/blog_app", {
+mongoose.connect(process.env.DATABASEURL || "mongodb://localhost/blog_app", {
     useUnifiedTopology: true,
     useNewUrlParser: true,
     useCreateIndex: true
