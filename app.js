@@ -29,7 +29,6 @@ app.get("/blogs", (req, res) => {
     Blog.find({}, (err, blogs) => {
         if (err) {
             console.log(err);
-            res.redirect("back");
         } else {
             res.render("index", { blogs: blogs });
         }
