@@ -32,18 +32,18 @@
             </div>
             <div class="right menu">
                 <% if(!currentUser){ %>
-                <a class="ui item" href="/login">
+                <a class="item" href="/login">
                     Login
                 </a>
-                <a class="ui item" href="/register">
+                <a class="item" href="/register">
                     Sign Up
                 </a>
                 <% } else { %>
-                <div class="ui item">
+                <div class="item">
                     Signed in as <%= currentUser.username %>
                 </div>
 
-                <a class="ui item" href="/logout">
+                <a class="item" href="/logout">
                     Logout
                 </a>
                 <% } %>

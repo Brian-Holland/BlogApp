@@ -64,8 +64,10 @@
         -o-transition-duration: 0.2s;
         transition-duration: 0.2s;
     }
+
     .hamburger.active {
     }
+
     .hamburger.active .hamburger-bun {
         margin: 0;
         -webkit-transform-origin: center center;
