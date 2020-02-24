@@ -1,6 +1,5 @@
 i.icon {
     font-size: 2em;
-    margin-right: 10px;
 }
 
 .container.main {
@@ -12,9 +11,14 @@ i.icon {
     margin-top: 100px;
 }
 
+#formicon {
+    width: 1.2em;
+}
+
 #desc {
     margin-top: 15px;
 }
+
 #delete {
     display: inline;
 }
