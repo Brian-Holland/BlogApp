@@ -4,7 +4,11 @@ const express = require("express"),
     mongoose = require("mongoose"),
     methodOverride = require("method-override"),
     expressSanitizer = require("express-sanitizer"),
-    Blog = require("./models/blog");
+    passport = require("passport"),
+    LocalStrategy = require("passport-local"),
+    Blog = require("./models/blog"),
+    User = require("./models/user"),
+    middleware = require("./middleware");
 
 // APP CONFIG
 mongoose.connect(process.env.DATABASEURL || "mongodb://localhost/blog_app", {
@@ -19,12 +23,75 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(expressSanitizer());
 
-//RESTFUL ROUTES
+//Passport Config
+app.use(
+    require("express-session")({
+        secret: "my blog secret",
+        resave: false,
+        saveUninitialized: false
+    })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+//Check if user logged in on every route
+app.use(function(req, res, next) {
+    res.locals.currentUser = req.user;
+    next();
+});
+
+//=====RESTFUL ROUTES=====//
+
+//Main page
 app.get("/", (req, res) => {
     res.redirect("/blogs");
 });
 
-//INDEX ROUTE
+//show register form
+app.get("/register", (req, res) => {
+    res.render("register");
+});
+
+//handle sign up logic
+app.post("/register", (req, res) => {
+    var newUser = new User({ username: req.body.username });
+    User.register(newUser, req.body.password, (err, user) => {
+        if (err) {
+            console.log(err);
+            res.redirect("back");
+        }
+        passport.authenticate("local")(req, res, () => {
+            res.redirect("/blogs");
+        });
+    });
+});
+
+//login page
+app.get("/login", (req, res) => {
+    res.render("login");
+});
+
+//handles login logic
+app.post(
+    "/login",
+    passport.authenticate("local", {
+        successRedirect: "/blogs",
+        failureRedirect: "/login"
+    }),
+    (req, res) => {}
+);
+
+//logout route
+app.get("/logout", (req, res) => {
+    req.logout();
+    res.redirect("/blogs");
+});
+
+//Main page blog list
 app.get("/blogs", (req, res) => {
     Blog.find({}, (err, blogs) => {
         if (err) {
@@ -35,13 +102,13 @@ app.get("/blogs", (req, res) => {
     }).sort({ created: "descending" });
 });
 
-//NEW ROUTE
-app.get("/blogs/new", (req, res) => {
+//Form to create new blog
+app.get("/blogs/new", middleware.isAdmin, (req, res) => {
     res.render("new");
 });
 
-//CREATE ROUTE
-app.post("/blogs", (req, res) => {
+//Post route for new blogs
+app.post("/blogs", middleware.isAdmin, (req, res) => {
     req.body.blog.body = req.sanitize(req.body.blog.body);
     Blog.create(req.body.blog, (err, newBlog) => {
         if (err) {
@@ -52,7 +119,7 @@ app.post("/blogs", (req, res) => {
     });
 });
 
-//SHOW ROUTE
+//More info on specific blog
 app.get("/blogs/:id", (req, res) => {
     Blog.findById(req.params.id, (err, foundBlog) => {
         if (err) {
@@ -63,8 +130,8 @@ app.get("/blogs/:id", (req, res) => {
     });
 });
 
-//EDIT ROUTE
-app.get("/blogs/:id/edit", (req, res) => {
+//Edit form
+app.get("/blogs/:id/edit", middleware.isAdmin, (req, res) => {
     Blog.findById(req.params.id, (err, foundBlog) => {
         if (err) {
             res.redirect("/blogs");
@@ -74,8 +141,8 @@ app.get("/blogs/:id/edit", (req, res) => {
     });
 });
 
-//UPDATE ROUTE
-app.put("/blogs/:id", (req, res) => {
+//Posts edit to blog
+app.put("/blogs/:id", middleware.isAdmin, (req, res) => {
     req.body.blog.body = req.sanitize(req.body.blog.body);
     Blog.findByIdAndUpdate(req.params.id, req.body.blog, (err, updatedBlog) => {
         if (err) {
@@ -86,8 +153,8 @@ app.put("/blogs/:id", (req, res) => {
     });
 });
 
-//DELETE ROUTE
-app.delete("/blogs/:id", (req, res) => {
+//Deletes blogs
+app.delete("/blogs/:id", middleware.isAdmin, (req, res) => {
     Blog.findByIdAndRemove(req.params.id, err => {
         if (err) {
             res.redirect("/blogs");

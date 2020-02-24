@@ -22,6 +22,24 @@
                 <a href="/" class="item">Home</a>
                 <a href="/blogs/new" class="item">New Post</a>
             </div>
+            <div class="right menu">
+                <% if(!currentUser){ %>
+                <a class="ui item" href="/login">
+                    Login
+                </a>
+                <a class="ui item" href="/register">
+                    Sign Up
+                </a>
+                <% } else { %>
+                <div class="ui item">
+                    Signed in as <%= currentUser.username %>
+                </div>
+
+                <a class="ui item" href="/logout">
+                    Logout
+                </a>
+                <% } %>
+            </div>
         </div>
     </body>
 </html>
