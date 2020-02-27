@@ -10,36 +10,64 @@
             href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.css"
         />
         <link type="text/css" rel="stylesheet" href="/stylesheets/app.css" />
+        <script
+            type="text/javascript"
+            src="https://code.jquery.com/jquery-2.2.4.min.js"
+        ></script>
+        <script
+            type="text/javascript"
+            src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"
+        ></script>
 
         <title>Blog App</title>
     </head>
     <body>
-        <div class="ui fixed inverted menu">
+        <div class="ui fixed inverted menu stackable">
             <div class="ui container">
                 <div class="header item">
-                    <i class="code icon"></i>My Blog App
+                    <i id="logo" class="comment outline icon"></i>My Blog App
                 </div>
                 <a href="/" class="item">Home</a>
                 <a href="/blogs/new" class="item">New Post</a>
             </div>
             <div class="right menu">
                 <% if(!currentUser){ %>
-                <a class="ui item" href="/login">
+                <a class="item" href="/login">
                     Login
                 </a>
-                <a class="ui item" href="/register">
+                <a class="item" href="/register">
                     Sign Up
                 </a>
                 <% } else { %>
-                <div class="ui item">
+                <div class="item">
                     Signed in as <%= currentUser.username %>
                 </div>
 
-                <a class="ui item" href="/logout">
+                <a class="item" href="/logout">
                     Logout
                 </a>
                 <% } %>
             </div>
+            <div class="hamburger ">
+                <span class="hamburger-bun"></span>
+                <span class="hamburger-patty"></span>
+                <span class="hamburger-bun"></span>
+            </div>
         </div>
+        <script>
+            $(document).ready(function() {
+                $(".hamburger").click(function(e) {
+                    $menu = $(this).parent();
+                    if (!$(this).hasClass("active")) {
+                        $(this).addClass("active");
+                        $menu.addClass("open");
+                    } else {
+                        $(this).removeClass("active");
+                        $menu.removeClass("open");
+                    }
+                    e.preventDefault();
+                });
+            });
+        </script>
     </body>
 </html>
