@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-// MONGOOSE/MODEL CONFIG
+// blog model schema creation
 const blogSchema = new mongoose.Schema({
     title: String,
     image: String,

@@ -10,7 +10,7 @@ const express = require("express"),
     User = require("./models/user"),
     middleware = require("./middleware");
 
-// APP CONFIG
+// app config (for deployment or local)
 mongoose.connect(process.env.DATABASEURL || "mongodb://localhost/blog_app", {
     useUnifiedTopology: true,
     useNewUrlParser: true,
@@ -23,7 +23,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.use(expressSanitizer());
 
-//Passport Config
+//passport config
 app.use(
     require("express-session")({
         secret: "my blog secret",
@@ -38,7 +38,7 @@ passport.use(new LocalStrategy(User.authenticate()));
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
-//Check if user logged in on every route
+//check if user logged in on every route
 app.use(function(req, res, next) {
     res.locals.currentUser = req.user;
     next();
@@ -46,19 +46,19 @@ app.use(function(req, res, next) {
 
 //=====RESTFUL ROUTES=====//
 
-//Main page
+//main page
 app.get("/", (req, res) => {
     res.redirect("/blogs");
 });
 
-//show register form
+//register form
 app.get("/register", (req, res) => {
     res.render("register");
 });
 
 //handle sign up logic
 app.post("/register", (req, res) => {
-    var newUser = new User({ username: req.body.username });
+    let newUser = new User({ username: req.body.username });
     User.register(newUser, req.body.password, (err, user) => {
         if (err) {
             console.log(err);
@@ -91,7 +91,7 @@ app.get("/logout", (req, res) => {
     res.redirect("/blogs");
 });
 
-//Main page blog list
+//main page blog list
 app.get("/blogs", (req, res) => {
     Blog.find({}, (err, blogs) => {
         if (err) {
@@ -102,13 +102,14 @@ app.get("/blogs", (req, res) => {
     }).sort({ created: "descending" });
 });
 
-//Form to create new blog
+//form to create new blog
 app.get("/blogs/new", middleware.isAdmin, (req, res) => {
     res.render("new");
 });
 
-//Post route for new blogs
+//handle logic for new blogs
 app.post("/blogs", middleware.isAdmin, (req, res) => {
+    //check for harmful scripting in blog body and sanitize
     req.body.blog.body = req.sanitize(req.body.blog.body);
     Blog.create(req.body.blog, (err, newBlog) => {
         if (err) {
@@ -119,7 +120,7 @@ app.post("/blogs", middleware.isAdmin, (req, res) => {
     });
 });
 
-//More info on specific blog
+//more info on specific blog
 app.get("/blogs/:id", (req, res) => {
     Blog.findById(req.params.id, (err, foundBlog) => {
         if (err) {
@@ -130,7 +131,7 @@ app.get("/blogs/:id", (req, res) => {
     });
 });
 
-//Edit form
+//ddit form
 app.get("/blogs/:id/edit", middleware.isAdmin, (req, res) => {
     Blog.findById(req.params.id, (err, foundBlog) => {
         if (err) {
@@ -141,7 +142,7 @@ app.get("/blogs/:id/edit", middleware.isAdmin, (req, res) => {
     });
 });
 
-//Posts edit to blog
+//handle blog edit logic
 app.put("/blogs/:id", middleware.isAdmin, (req, res) => {
     req.body.blog.body = req.sanitize(req.body.blog.body);
     Blog.findByIdAndUpdate(req.params.id, req.body.blog, (err, updatedBlog) => {
