@@ -1,7 +1,34 @@
 # BlogApp
 
-Basic blog app allowing users to create a post that will be listed with most recent posts first.
+### Purpose
+Basic blog app allowing users to create an account and view, create, edit, and delete blog posts.
 
+###### Please note
 Updated blog app to currently be read-only for portfolio purposes. 
 
-All user-created accounts will be able to see routes for CRUD commands, but only the main admin account will be able to perform those actions.
+![preview of app](app_pic.png)
+
+### Built Using
+* HTML
+  * With EJS
+* CSS
+  * Semantic UI
+* JavaScript
+* Express
+  * Passport
+  * Express Sessions
+* Node
+* MongoDB
+  * Mongoose
+  
+### Features
+* User account creation
+* User sessions
+* Full CRUD operations
+* Authentication
+* Responsive web design
+* RESTful routing
+* Custom schema models
+
+
+
